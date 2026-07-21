@@ -1,0 +1,47 @@
+###############################################################
+#
+#  MoveIt Pro PHYSICAL-hardware configuration for the SO-101 arm.
+#  Inherits from so101_base_config and swaps mock hardware for the real
+#  Feetech STS3215 bus servos via feetech_ros2_driver.
+#
+###############################################################
+
+based_on_package: "so101_base_config"
+
+hardware:
+  # Real hardware.
+  simulated: false
+  launch_control_node: True
+  launch_robot_state_publisher: True
+
+  robot_description:
+    # Physical URDF: same geometry as the base, but real Feetech ros2_control.
+    urdf:
+      package: "so101_hw"
+      path: "description/so101_hw.urdf.xacro"
+    # Reuse the base SRDF (identical kinematics / groups / collisions).
+    srdf:
+      package: "so101_base_config"
+      path: "config/moveit/so101.srdf"
+    urdf_params:
+      - hardware_type: "real"
+      # Device node of the Waveshare/Feetech USB-TTL adapter. Override to match
+      # the host (often /dev/ttyUSB0; may be /dev/ttyACM0). joint_config_file
+      # defaults to so101_hw/config/follower_joints.yaml (see that file).
+      - usb_port: "/dev/ttyUSB0"
+
+# Same controllers as the base config (they claim the same interfaces whether the
+# hardware is mock or the real Feetech bus).
+ros2_control:
+  config:
+    package: "so101_base_config"
+    path: "config/control/so101.ros2_control.yaml"
+  controllers_active_at_startup:
+    - "joint_state_broadcaster"
+    - "joint_trajectory_admittance_controller"
+    - "gripper_controller"
+  controllers_inactive_at_startup:
+    - "joint_velocity_controller"
+    - "velocity_force_controller"
+  controllers_not_managed: []
+  controller_shared_topics: []

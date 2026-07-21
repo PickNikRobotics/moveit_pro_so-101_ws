@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="so101">
+  <!--
+    Physical-hardware URDF wrapper for the SO-101 follower arm.
+
+    Same arm/gripper geometry, world frame, and grasp_link as the base config, but
+    the ros2_control block uses the upstream so101_ros2_control macro with
+    hardware_type=real, which loads feetech_ros2_driver/FeetechHardwareInterface to
+    drive the physical Feetech STS3215 bus servos over the USB-TTL adapter.
+  -->
+
+  <!-- Real hardware. Override usb_port to match the adapter's device node. -->
+  <xacro:arg name="hardware_type" default="real"/>
+  <xacro:arg name="usb_port" default="/dev/ttyUSB0"/>
+  <!--
+    Per-servo calibration (homing offsets, tick ranges, PID). This default is the
+    UPSTREAM author's arm calibration used as a starting point; it MUST be
+    recalibrated for the office SO-101 (see config/follower_joints.yaml).
+  -->
+  <xacro:arg name="joint_config_file" default="$(find so101_hw)/config/follower_joints.yaml"/>
+
+  <!-- World frame (TF root) -->
+  <link name="world"/>
+  <joint name="world_fixed" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Upstream SO-101 description macros -->
+  <xacro:include filename="$(find so101_description)/urdf/so101_macros.xacro"/>
+  <xacro:include filename="$(find so101_description)/urdf/so101_materials.xacro"/>
+  <xacro:include filename="$(find so101_description)/urdf/so101_arm_common.xacro"/>
+  <xacro:include filename="$(find so101_description)/urdf/end_effectors/so101_ee_common.xacro"/>
+  <xacro:include filename="$(find so101_description)/urdf/end_effectors/so101_ee_follower.xacro"/>
+
+  <xacro:so101_materials/>
+  <xacro:so101_arm_common mesh_dir="package://so101_description/meshes" add_transmissions="false"/>
+  <xacro:so101_ee_follower mesh_dir="package://so101_description/meshes" add_transmissions="false"/>
+
+  <!-- grasp_link TCP (matches the base config; +Z out of the tool) -->
+  <link name="grasp_link"/>
+  <joint name="grasp_link_joint" type="fixed">
+    <parent link="gripper_link"/>
+    <child link="grasp_link"/>
+    <origin xyz="-0.0079 -0.000218121 -0.0981274" rpy="0 3.14159 0"/>
+  </joint>
+
+  <!-- Real Feetech ros2_control (from the upstream so101_description) -->
+  <xacro:include filename="$(find so101_description)/urdf/ros2_control/so101_ros2_control.xacro"/>
+  <xacro:so101_ros2_control
+    variant="follower"
+    hardware_type="$(arg hardware_type)"
+    usb_port="$(arg usb_port)"
+    joint_config_file="$(arg joint_config_file)"
+    system_name="SO101Follower"/>
+</robot>
