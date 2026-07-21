@@ -81,11 +81,17 @@ Before this will drive the arm, three things must be true:
    [`usbipd-win`](https://learn.microsoft.com/windows/wsl/connect-usb):
    `usbipd list` then `usbipd attach --wsl --busid <id>` from Windows. The `drivers`
    container already bind-mounts `/dev`.
-2. **The arm is calibrated for this unit.** `src/so101_hw/config/follower_joints.yaml`
-   currently holds the *upstream* arm's calibration as a placeholder. Regenerate the
-   `homing_offset` / `range_min` / `range_max` per servo for the office SO-101 (via the
-   lerobot calibration flow or the `feetech_ros2_driver` tooling) — otherwise joints
-   will be mis-centered and range-clipped.
+2. **The arm is calibrated for this unit.** Calibration is a **LeRobot** step (not a ROS
+   one) and writes homing offsets + tick ranges into each servo's **EEPROM**. Follow the
+   [LeRobot SO-101 guide](https://huggingface.co/docs/lerobot/so101): `lerobot-find-port`,
+   then (one-time, if needed) `lerobot-setup-motors --robot.type=so101_follower
+   --robot.port=<port>`, then `lerobot-calibrate --robot.type=so101_follower
+   --robot.port=<port> --robot.id=<name>` (move all joints to mid-range, press Enter, then
+   sweep each joint through its full range). We only need the follower.
+   `joint_config_file` is left empty by default so the driver uses that on-servo
+   calibration; `config/follower_joints.yaml` is an override-only example (pointing the
+   driver at it would overwrite the EEPROM calibration, so only use it with this arm's
+   own values).
 3. **You confirm the servo variant.** 7.4V vs 12V STS3215 affects torque/power only, not
    the config.
 

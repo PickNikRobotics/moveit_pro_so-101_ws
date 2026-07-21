@@ -13,11 +13,16 @@
   <xacro:arg name="hardware_type" default="real"/>
   <xacro:arg name="usb_port" default="/dev/ttyUSB0"/>
   <!--
-    Per-servo calibration (homing offsets, tick ranges, PID). This default is the
-    UPSTREAM author's arm calibration used as a starting point; it MUST be
-    recalibrated for the office SO-101 (see config/follower_joints.yaml).
+    joint_config_file is EMPTY by default on purpose. The arm is calibrated with
+    LeRobot (`lerobot-calibrate`), which writes homing offsets and tick ranges into
+    each servo's EEPROM. The driver writes any joint_config_file values back into
+    the motors on startup, so pointing this at a file would OVERWRITE the EEPROM
+    calibration. Empty = URDF params only (id + PID + gripper torque/protection),
+    leaving the on-servo calibration as the source of truth.
+    config/follower_joints.yaml is kept only as an override-only example (set this
+    arg to that path if you deliberately want to force specific per-servo values).
   -->
-  <xacro:arg name="joint_config_file" default="$(find so101_hw)/config/follower_joints.yaml"/>
+  <xacro:arg name="joint_config_file" default=""/>
 
   <!-- World frame (TF root) -->
   <link name="world"/>

@@ -1,14 +1,19 @@
-# Per-servo Feetech calibration for the SO-101 follower arm.
+# Per-servo Feetech parameters for the SO-101 follower — OVERRIDE-ONLY EXAMPLE.
 #
-# !!! PLACEHOLDER — RECALIBRATE FOR THE OFFICE ARM BEFORE DRIVING HARDWARE !!!
-# These homing_offset / range_min / range_max values are the UPSTREAM author's
-# arm calibration (from legalaspro/so101-ros-physical-ai). homing_offset and the
-# tick ranges are physical per-unit values; using another arm's calibration will
-# mis-center the joints and clip their range. Regenerate these for this specific
-# SO-101 (e.g. via the lerobot calibration flow or the feetech_ros2_driver
-# calibration tooling), matched to each servo by `id`.
+# NOT applied by default. so101_hw.urdf.xacro sets joint_config_file="" so the
+# driver does NOT load this file, and the on-servo EEPROM calibration written by
+# LeRobot (`lerobot-calibrate`) stays the source of truth.
 #
-# The `gripper` (id 6) block also sets torque/current protection limits.
+# The homing_offset / range_min / range_max values below are the UPSTREAM author's
+# arm (legalaspro/so101-ros-physical-ai) and would MIS-CENTER and range-clip a
+# different unit. The driver WRITES these back into the motors on startup, so
+# pointing joint_config_file here would OVERWRITE this arm's LeRobot calibration.
+#
+# Only use this file (set the joint_config_file arg to its path) if you
+# deliberately want to force specific per-servo values for THIS arm — in which
+# case replace the numbers below with this arm's calibration first. The gripper
+# (id 6) block also carries torque/current protection limits, which LeRobot does
+# not produce.
 joints:
   shoulder_pan:
     id: 1

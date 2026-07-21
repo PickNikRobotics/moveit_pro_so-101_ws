@@ -25,10 +25,14 @@ hardware:
       path: "config/moveit/so101.srdf"
     urdf_params:
       - hardware_type: "real"
-      # Device node of the Waveshare/Feetech USB-TTL adapter. Override to match
-      # the host (often /dev/ttyUSB0; may be /dev/ttyACM0). joint_config_file
-      # defaults to so101_hw/config/follower_joints.yaml (see that file).
+      # Device node of the SO-101 control board / USB-TTL adapter. Override to
+      # match the host (SO-101 board is often /dev/ttyACM0; a separate Waveshare
+      # bus adapter is usually /dev/ttyUSB0).
       - usb_port: "/dev/ttyUSB0"
+      # joint_config_file is intentionally left at the URDF default ("") so the
+      # LeRobot EEPROM calibration is the source of truth. Only set it if you want
+      # to force per-servo overrides for this arm:
+      #   - joint_config_file: "$(find so101_hw)/config/follower_joints.yaml"
 
 # Same controllers as the base config (they claim the same interfaces whether the
 # hardware is mock or the real Feetech bus).
