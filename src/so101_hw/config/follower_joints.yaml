@@ -1,0 +1,80 @@
+# Per-servo Feetech calibration for the SO-101 follower arm.
+#
+# !!! PLACEHOLDER — RECALIBRATE FOR THE OFFICE ARM BEFORE DRIVING HARDWARE !!!
+# These homing_offset / range_min / range_max values are the UPSTREAM author's
+# arm calibration (from legalaspro/so101-ros-physical-ai). homing_offset and the
+# tick ranges are physical per-unit values; using another arm's calibration will
+# mis-center the joints and clip their range. Regenerate these for this specific
+# SO-101 (e.g. via the lerobot calibration flow or the feetech_ros2_driver
+# calibration tooling), matched to each servo by `id`.
+#
+# The `gripper` (id 6) block also sets torque/current protection limits.
+joints:
+  shoulder_pan:
+    id: 1
+    homing_offset: 530
+    range_min: 866
+    range_max: 3231
+    p_coefficient: 16 # may be original 16 is too much, set 12
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  shoulder_lift:
+    id: 2
+    homing_offset: -369
+    range_min: 896
+    range_max: 3211
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  elbow_flex:
+    id: 3
+    homing_offset: -98
+    range_min: 866
+    range_max: 3066
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  wrist_flex:
+    id: 4
+    homing_offset: 725
+    range_min: 1039
+    range_max: 3121
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  wrist_roll:
+    id: 5
+    homing_offset: 1704
+    range_min: 123
+    range_max: 3955
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  gripper:
+    id: 6
+    homing_offset: 1573
+    range_min: 2027
+    range_max: 3483
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+    max_torque_limit: 500
+    protection_current: 250
+    overload_torque: 25
